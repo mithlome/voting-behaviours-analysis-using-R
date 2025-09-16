@@ -1,0 +1,764 @@
+---
+title: "The impact of internet use on voting behavior and party choice: An analysis based on the ESS11-UK subset"
+output: 
+  pdf_document:
+    latex_engine: lualatex
+author: Can Yang
+date: "2025-03-28"
+header-includes:
+  - \usepackage{longtable}
+  - \usepackage{threeparttable}
+  - \usepackage{caption}
+  - \usepackage{tabularray}[=v2024]
+  - \captionsetup{width=\textwidth}
+knitr:
+  opts_chunk:
+    echo: false
+format:
+  beamer:
+    keep-tex: true
+execute:
+  output: true
+  include: true
+  eval: true
+  warning: false
+  error: false
+---
+
+# Introduction
+The relationship between Internet use and voting behavior is a key concern in political sociology. As Internet accessibility has expanded, it has changed the way voters access political information, bypassing traditional editorial filters [@Heblich2016]. This shift raises a key question: whether increased exposure to a variety of information sources encourages political participation or, conversely, leads to information overload, which reduces voter engagement.
+
+# Background
+According to [@Heblich2016], the initial phase of Internet adoption (before 2008) coincided with a decline in voter turnout in countries such as Germany and Italy, due to “information overload” and the crowding-out effect of entertainment on political information. However, the rise of social media platforms such as Facebook and Twitter reversed this trend, facilitating direct political participation and providing voters with better tools to filter relevant content. This evolution suggests a complex relationship between Internet use, political knowledge, and voter engagement.
+
+In addition, [@Zhuravskaya2020] mentioned in their review that social media has lowered the threshold for information dissemination, which has enabled more non-traditional political information to enter the public eye and also helped mobilize voters to participate in political activities. Although their review covers the experience of the world and some authoritarian countries, these views can also help me understand the situation in the UK.
+
+I consider education level as a potential mediating variable.According to the digital divide theory [@VanDijk2006], education level may affect voting behavior through two paths:
+
+Direct path: Individuals with high education levels usually have stronger political information processing capabilities, which directly promotes voting participation.
+
+Mediation path: High-frequency Internet use may indirectly enhance political knowledge by improving the accessibility of educational resources (such as online courses and academic literature), thereby increasing the probability of voting.
+
+In this study, education level is hypothesized to act as such a mediator: frequent Internet use could expand access to educational opportunities, which in turn strengthens political engagement.
+
+In addition, age, gender, and income, as potential confounding factors, may be related to both Internet use and voting behavior (such as high-income groups are more likely to use the Internet frequently and participate in voting), and need to be controlled in the model to separate the independent effect of Internet use. 
+
+In the UK, with the increase in Internet penetration, voters are exposed to a wider variety of information, which may both increase their attention to political issues and enable some groups that were not very active to re-participate in elections. On the other hand, the Internet makes it easier for voters to access a variety of voices, which may also change their support for traditional political parties. For example, in some European countries, the popularity of mobile Internet is associated with changes in support for populist parties. This provides a certain theoretical basis for us to explore the relationship between Internet use and voting behavior and party choice in the context of the UK.
+
+This study aims to examine how Internet use affects two aspects of electoral behavior: (1) the likelihood of voting and (2) party choice. In addition, I will explore how these relationships vary across socioeconomic groups. 
+
+## Research Question
+This study focuses on the following core questions:
+
+*1. Does Internet use affect the likelihood of individuals voting?*
+
+*2. How does Internet use affect voters' party choice (Labour, Conservative, or Other)?*
+
+*3. Does the effect vary by age, gender, income level, education level?*
+
+Based on the existing literature, I propose the following hypotheses:
+
+*H1: Individuals who use the Internet more frequently are more likely to vote.*
+As the frequency of Internet use increases, respondents have more channels to obtain political information, which in turn stimulates their willingness to vote. Therefore, it is expected that in the overall sample, the voting rate of groups with high Internet usage frequency (such as "Most Days" and "Every Day") will be significantly higher than that of groups with low Internet usage frequency (such as "Never" and "Occasional").
+
+*H2: Individuals who use the Internet more frequently will show different tendencies in party choice.*
+Frequent Internet users may show different preferences in party selection than low-frequency users because they are exposed to more diverse and even personalized information. Specifically, frequent Internet users may reduce their reliance on traditional mainstream parties (such as Labour and Conservative), and are more likely to shift their votes to non-traditional or "small parties" (Other), or to see a more significant split between the two major parties.
+
+*H3: The impact of Internet use on voting behavior varies depending on factors such as age, gender, income, and education level.*
+The impact of Internet use is not homogeneous, but depends on the socioeconomic characteristics of individuals. In the multinominom regression model, significant interaction effects are expected, as follows:
+
+Gender plays an important role. Females tend to pay more attention to social policies and welfare issues. Frequent Internet use can help them get more information, which may increase their voting rate. They are also more likely to be influenced by information about social justice, so they often support Labour or other parties that focus on social welfare. In contrast, male voting behavior is relatively stable, and the positive effect of frequent Internet use is less clear. When it comes to party choice, there may be larger differences between supporting the Conservative Party and other parties.
+
+Age also matters. Younger people (aged 18–35) are more familiar with digital technology and can use the Internet well to find and filter information. Their voting rate is likely to increase with frequent Internet use, and they may show more diversity in party choices. For middle-aged and older groups (over 50 years), the impact of frequent Internet use is weaker because they adapt less to technology. Their voting behavior may rely more on traditional media and long-held party loyalties.
+
+Income affects access and information as well. High-income earners usually have better Internet access and higher information skills, which can boost their political participation and may lead them to support the Conservative Party, known for its market and liberal policies. Low-income groups, however, may face resource and skill limits. Even with frequent Internet use, their voting rate may not increase as much, and they might stick to their usual party choices due to limited access to diverse information.
+
+Education is another key factor. People with higher education levels can process and compare political information better using the Internet. This makes their voting decisions more informed, and they may choose a wider range of parties or make more rational choices. In contrast, those with lower education may have difficulties with information screening and judgment, so the benefits of frequent Internet use may be limited. Their voting rate may not rise significantly, and they might continue to support traditional parties.
+
+Finally, in this study, party choices are divided into three categories: Labour, Conservative, and Other. Labour and Conservative are the two main parties in the UK, usually receiving most votes and seats in elections. The Other category includes all smaller parties and independent candidates, such as the Liberal Democrats, the Green Party, and the Scottish National Party. This grouping was made to better reflect the UK political landscape, even though it is a rough division due to limited knowledge of all British political parties.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message = FALSE, warning = FALSE)
+
+```
+
+# Data
+This study uses the UK subset of the European Social Survey (ESS) 2024 Round 11 (ESS11) data. The original data contains 1182 observations involving variables such as voters' voting behavior, Internet use, and socioeconomic status.
+
+*Sample screening:*
+Only respondents with complete voting data are retained.
+
+After filtering, the final sample size is *1182*.
+
+Voting distribution: *786* people voted (66.5%), and *396* people did not vote (33.5%).
+
+Party choice distribution: Among voters, 42.9% chose Labour, 18.2% chose Other, and 38.9% chose Conservative.
+
+*Key variables:*
+Dependent variable:
+
+Whether to vote (Binary: Yes/No).
+
+Party choice (Multinomial: Labour/Conservative/Other).
+
+Independent Variable:
+
+Frequency of Internet Use (Never, Occasional, FewTimesPerWeek, MostDays, EveryDay).
+
+Control Variables:
+
+Gender (Male/Female).
+
+Age (continuous variable).
+
+Income (High/Middle/Low).
+
+Education Level (Low/Medium/High).
+
+```{r}
+library(tidyverse)
+library(nnet)     
+library(broom)   
+library(ggeffects) 
+library(knitr)
+
+ess <- read_csv("ESS11-subset.csv")
+
+ess_filtered <- ess %>%
+  select(prtvtdgb,netusoft, gndr, agea, hinctnta,edubgb2)
+
+ess_filtered <- ess_filtered %>%
+  filter(!netusoft %in% c(7, 8, 9)) %>%
+  mutate(
+    internet_use = case_when(
+      netusoft == 1 ~ "Never",
+      netusoft == 2 ~ "Occasional",
+      netusoft == 3 ~ "FewTimesPerWeek",
+      netusoft == 4 ~ "MostDays",
+      netusoft == 5 ~ "EveryDay",
+      TRUE ~ NA_character_
+    ),
+    internet_use = factor(internet_use, levels = c("Never", "Occasional", "FewTimesPerWeek", "MostDays", "EveryDay"))
+  ) 
+
+ess_filtered <- ess_filtered %>%
+  mutate(
+    voted = if_else(prtvtdgb %in% 1:23, 1, 0)
+  )
+
+# classify education level
+ess_filtered <- ess_filtered %>%
+  filter(!edubgb2 %in% c(7777, 8888, 9999)) %>%
+mutate(
+    education = case_when(
+      edubgb2 %in% c(1, 2, 3, 4) ~ "High",
+      edubgb2 %in% c(5, 6, 7, 8) ~ "Medium",
+      edubgb2 %in% c(9, 10, 11) ~ "Low",
+      TRUE ~ NA_character_
+    ),
+    education = factor(education, levels = c("Low", "Medium", "High"))
+  )
+
+ess_filtered <- ess_filtered |> 
+ mutate(gndr = factor(case_when(
+  gndr == 1 ~ "Male",
+  gndr == 2 ~ "Female",
+  TRUE ~ NA_character_
+), levels = c("Male", "Female")))
+
+
+# party choice
+ess_filtered <- ess_filtered |>
+  mutate(
+    vote = case_when(
+      prtvtdgb %in% c(1,7,8,21) ~ "Conservative",     
+      prtvtdgb %in% c(2,6) ~ "Labour",             
+      prtvtdgb %in% c(3,14,4,5,9:20,22,23) ~ "Other",  
+      TRUE ~ "Other"
+    ),
+    vote = factor(vote, levels = c( "Labour", "Other","Conservative"))
+  )
+
+ess_filtered <- ess_filtered %>%
+ 
+  filter(!hinctnta %in% c(77, 88, 99)) %>%
+
+  mutate(
+    income = case_when(
+      hinctnta %in% 1:3 ~ "Low",      
+      hinctnta %in% 4:7 ~ "Middle",    
+      hinctnta %in% 8:10 ~ "High",    
+      TRUE ~ NA_character_           
+    )
+  )
+ess_filtered <- ess_filtered %>%
+  mutate(
+    voted = if_else(prtvtdgb %in% 1:23, "Yes", "No"),
+    voted = factor(voted, levels = c("No", "Yes"))
+  )
+
+ess_filtered <- ess_filtered %>%
+  filter(agea != 999)
+
+final_data_binary <- ess_filtered %>%
+  drop_na(voted,education,internet_use,income, agea, gndr)
+
+
+```
+
+
+# Methods
+This study uses binary logistic regression and multinomial logistic regression models to analyze the impact of Internet use on voting behavior and party choice. These models are suitable for handling discrete dependent variables, and are used to analyze the binary classification problem of whether to vote and the multinomial classification problem of party choice (Long & Freese, 2014). In binary logistic regression, the dependent variable is "whether to vote" (1 = vote, 0 = not vote), while the dependent variable of multinomial logistic regression is "party choice", including three categories: Labour, Conservative, and Other, with Labour as the reference category. By gradually introducing control variables (age, gender, income, education level), I can test whether Internet use still has a significant impact on voting behavior and party choice after controlling for demographic characteristics.
+
+In the model setting, the frequency of Internet use is used as the core independent variable, which is divided into five categories (Never, Occasional, Few Times per Week, Most Days, Every Day). In the binary logistic regression model, I first included only the frequency of Internet use as an explanatory variable (Model A), then added age in Model B, and finally further added gender, income, and education level in Model C, and gradually tested the independent and interactive effects of each variable on voting behavior. 
+
+For multinomial logistic regression, I used the same variable settings to compare the differences in party choice among different Internet user groups. 
+
+It is worth noting that education level may have both confounding and mediating effects (such as Internet use promotes education level, which in turn affects voting). However, since cross-sectional data cannot strictly verify the causal path, this study uses education level as a control variable to conservatively estimate the direct effect of Internet use. Future research needs to clarify its mechanism through longitudinal design or mediation analysis.
+
+The goodness of fit of the model was evaluated by AIC, BIC, Pseudo R², and chi-square test (χ²). The explanatory effect of the model was intuitively presented through the predicted probability graph to present the changing trends of voting probability and party preference under different conditions.
+
+# Results
+## Binary Regression
+```{r}
+library(tableone)
+library(knitr)
+library(kableExtra)
+
+
+covariates <- c("internet_use", "education","income","agea", "gndr","voted" )
+
+
+catVars <- c("internet_use","education", "income", "gndr", "voted")
+
+
+
+desc_table <- CreateTableOne(
+  vars = covariates,
+  strata = "voted",
+  data = final_data_binary,
+  factorVars = catVars,
+  addOverall = TRUE
+)
+
+
+desc_table_matrix <- print(
+  desc_table,
+  showAllLevels = TRUE,
+  quote = FALSE,
+  noSpaces = TRUE,
+  printToggle = FALSE,
+  test = FALSE
+)
+rownames(desc_table_matrix) <- c(
+  "N", 
+  "Internet Use (%)",
+  " ", 
+  "          ",
+  "", 
+  "                 ",
+  "Education (%)",
+  "                       ",
+  "                             ",
+  "Income (%)", 
+  "  ", 
+  "   ", 
+  "Age (mean(SD))", 
+  "Gender", 
+  "    ", 
+  "Voted",
+  "    "
+)
+
+kable(desc_table_matrix,format = "latex", longtable = TRUE, booktabs = TRUE,
+      caption = "Descriptive Statistics by Overall and Voted Groups",
+      align = "l"
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    latex_options = c("scale_down", "repeat_header"), 
+    bootstrap_options = c("striped", "hover", "condensed")
+  ) %>%
+  footnote(
+    general = "Data source: ESS11-UK subset(2024).\\",
+    general_title = "Note: The data comprises 1182 respondents, \ngrouped according to whether they voted or not.",
+    threeparttable = TRUE,
+    footnote_as_chunk = TRUE,
+    escape = FALSE
+  )
+
+```
+**Interpretation**
+
+I have the statistics in *Table 1*, which I will interpret next.
+
+**Voting Rate**  
+In the overall sample (N = 1182), 66.5% of respondents reported that they voted, while 33.5% did not. Although voters constitute the majority, more than one-third of the respondents did not participate in the vote.
+
+**Internet Use**  
+A striking 79.6% of the respondents reported using the Internet every day, whereas only 6.3% stated that they never use it. When comparing voting behavior by Internet use frequency, 80.1% of non-voters use the Internet daily compared to 79.4% of voters. Similarly, 6.8% of non-voters never use the Internet versus 6.0% of voters. These findings suggest that, in this sample, the vast majority of respondents are daily Internet users, and there is no pronounced difference in Internet use frequency between voters and non-voters.
+
+**Education Level**  
+Nearly half of the sample (48.8%) has a low education level, while 36.5% are highly educated and 14.6% have a medium level of education. In terms of voting behavior, 59.8% of non-voters have a low education level compared to only 43.3% among voters. Conversely, a higher proportion of voters (40.6%) are highly educated relative to non-voters (28.5%). This indicates a clear positive association between education level and the likelihood of voting.
+
+**Income Level**  
+Regarding income, 28.8% of respondents fall into the high-income category, 35.3% into the low-income group, and 36.0% are classified as middle-income. The voting breakdown shows that 32.3% of voters are high-income, whereas only 21.7% of non-voters are high-income. In contrast, low-income respondents represent 31.7% of voters but 42.4% of non-voters, suggesting that higher income is positively correlated with voting behavior.
+
+**Age**  
+The overall average age of the sample is 53.24 years (SD = 18.04). Non-voters have an average age of approximately 45.95 years, while voters average around 56.90 years. This substantial difference indicates that older individuals are more likely to vote, whereas the voting rate among younger respondents is relatively low.
+
+**Gender**  
+The overall sample is evenly split between men and women (50.0% each). However, among non-voters, 53.5% are female and 46.5% are male; conversely, among voters, 51.8% are male and 48.2% are female. Although the overall gender distribution is balanced, the data suggest that men are slightly more likely to vote, as evidenced by their higher proportion among voters and the correspondingly higher proportion of women among non-voters.
+
+**Comprehensive Observation**  
+Overall, the analysis reveals clear correlations between education, income, age, and voting behavior. Individuals with higher education, higher income, and older age are more inclined to vote. In contrast, Internet use exhibits little variation between voters and non-voters in this descriptive analysis, indicating that further regression or model-based analysis is required to elucidate its actual impact on voting behavior. While gender differences are relatively modest, there is a slight tendency for men to vote more than women, as reflected by the observed distributions.
+
+
+### Binary Regression Models
+```{r}
+library(dplyr)
+library(tinytable)
+library(dplyr)
+library(modelsummary)
+library(lmtest)      
+library(broom)       
+library(kableExtra)
+
+
+
+
+common_data <- final_data_binary %>%
+  drop_na(voted, internet_use, income, agea, gndr,education)
+
+
+
+null_model <- glm(voted ~ 1, data = common_data, family = binomial)
+
+model_a <- glm(voted ~ internet_use, data = common_data, family = binomial)
+model_b <- glm(voted ~ internet_use + agea, data = common_data, family = binomial)
+model_c <- glm(voted ~ internet_use + income + agea + gndr + education, data = common_data, family = binomial)
+
+models <- list("Model A" = model_a,
+               "Model B" = model_b,
+               "Model C" = model_c)
+
+# calculate observed values I need
+mslist <- function(models, data, dv = "voted") {
+ 
+  lrtests <- sapply(models, function(mod) {
+    lr <- lmtest::lrtest(null_model, mod)
+    c(Df = lr$Df[2], Chisq = lr$Chisq[2], `Pr(>Chisq)` = lr$`Pr(>Chisq)`[2])
+  })
+  
+
+  mslist <- modelsummary(models, output = "modelsummary_list", 
+                         statistic = "conf.int", exponentiate = TRUE)
+  
+  for(m in names(models)) {
+    mslist[[m]]$glance$logLik <- round(as.numeric(logLik(models[[m]])), 2)
+    mslist[[m]]$glance$df <- lrtests["Df", m]
+    mslist[[m]]$glance$chisq <- lrtests["Chisq", m]
+    mslist[[m]]$glance$p.value <- round(lrtests["Pr(>Chisq)", m], 3)
+    
+    mslist[[m]]$glance$pseudo.r.squared <- round(1 - (as.numeric(logLik(models[[m]])) / as.numeric(logLik(null_model))), 2)
+    
+    
+    pred_class <- ifelse(predict(models[[m]], type = "response") >= 0.5, "Yes", "No")
+    mslist[[m]]$glance$pct.correct <- round(mean(pred_class == data[[dv]]) * 100, 1)
+  }
+  return(mslist)
+}
+
+modlist <- mslist(models, data = common_data, dv = "voted")
+
+gof_map <- c("nobs", "aic", "bic", "logLik", "pseudo.r.squared", "chisq", "df", "p.value", "pct.correct")
+
+table2 <- modelsummary(modlist,
+             exponentiate = TRUE,
+             coef_map = c(
+    "(Intercept)" = "Intercept",
+    "internet_useOccasional" = "Internet Use: Occasional",
+    "internet_useFewTimesPerWeek" = "Internet Use: Few Times/Week",
+    "internet_useMostDays" = "Internet Use: Most Days",
+    "internet_useEveryDay" = "Internet Use: Every Day",
+    "incomeMiddle" = "Income: Middle",
+    "incomeLow" = "Income: Low",
+    "gndrFemale" = "Gender: Female",
+    "agea" = "Age (years)",
+    "educationMedium" = "Education: Medium",
+    "educationHigh" = "Education: High"
+  ),
+             statistic = "({conf.low}, {conf.high})",
+             gof_map = gof_map,
+             title = "Odds Ratios from Logistic Regression Models",
+             notes ="Reference groups: Internet Use = Never, Income = High, Gender = Male, Education = Low.
+                    Source:ESS11-UK subset(2024)",
+             fmt = 2
+)|>
+   style_tt(latex_options = c("scale_down"), bootstrap_class = "table caption-top", escape = FALSE)
+
+table2
+
+
+```
+
+
+**Regression Model Overview**  (Table2)
+This analysis examines whether individuals vote (1) or not (0), using three logistic regression models (Model A, Model B, and Model C) that progressively incorporate additional control variables. In all models, the reference groups are “Never” for Internet Use, “High” for Income, “Male” for Gender, and “Low” for Education. Model A includes only Internet Use Frequency as the main predictor; Model B adds Age; and Model C further includes Income, Gender, and Education.
+
+**Interpretation of Model Coefficients**  
+In *Model A*, only Internet Use Frequency is considered. The intercept of 1.74 (CI: 1.09–2.83) represents the odds of voting for the baseline scenario (never using the Internet, high income, male, low education, and age equal to 0). However, because age is not included, this intercept does not have a direct real-world meaning. In addition, the coefficients for Internet Use are generally not significant. For example, “Few Times/Week” has an odds ratio (OR) of 1.81 (CI: 0.71–5.07) and “Every Day” has an OR of 1.13 (CI: 0.68–1.84); both confidence intervals include 1. This is also supported by the chi-square test (Chi2 = 1.712, p = 0.789) and the near-zero pseudo R² (0.000), showing that Internet Use alone does not explain voting behavior well.
+
+In *Model B*, age is added as a control variable. The intercept drops to 0.06 (CI: 0.02–0.12), which mainly reflects that most people in the sample have an age greater than zero, so the intercept is used more as a baseline for comparison. Once age is controlled for, the effect of frequent Internet use becomes significant. For instance, “Few Times/Week” has an OR of 3.24 (CI: 1.20–9.64), “Most Days” has an OR of 2.52 (CI: 1.30–4.92), and “Every Day” has an OR of 4.09 (CI: 2.31–7.19). Age itself shows a positive association, where each additional year increases the odds of voting by about 5% (OR = 1.05, CI: 1.04–1.06). Model B’s chi-square test (Chi2 = 127.212, p = 0.000) and pseudo R² (0.080) indicate that the model explains voting behavior much better when age is included.
+
+*Model C* adds Income, Gender, and Education to the controls used in Model B. The intercept remains small at 0.07 (CI: 0.03–0.16), which reflects that more variables are now controlled for. In this model, “Occasional” Internet use is still not significant (OR = 1.25, CI: 0.48–3.40), but “Few Times/Week” (OR = 3.01, CI: 1.11–9.06) remains significant, and “Every Day” (OR = 2.66, CI: 1.47–4.77) is still strongly predictive of voting. Regarding other factors, middle-income (OR = 0.66, CI: 0.46–0.94) and low-income (OR = 0.43, CI: 0.30–0.63) groups have significantly lower odds of voting compared to high-income individuals. Although female gender (OR = 0.80, CI: 0.62–1.05) does not reach traditional significance, it suggests that women might vote slightly less often. Age continues to show a positive effect (OR = 1.05, CI: 1.04–1.06), and higher education levels greatly increase the odds of voting (Medium: OR = 1.84, CI: 1.23–2.80; High: OR = 2.32, CI: 1.68–3.21). Model C’s chi-square test (Chi2 = 199.315, p = 0.000), pseudo R² (0.130), and lower AIC (1330.2) and BIC (1386.0) all indicate that this model fits the data better by capturing the combined effects of Internet Use, Age, Income, Gender, and Education.
+
+It is important to note that when education is controlled in Model C, the effect of Internet use is reduced (for example, the OR for “Every Day” drops from 4.09 in Model B to 2.66 in Model C). This reduction may suggest that education partially mediates the effect of Internet use on voting. In other words, high-frequency Internet users might indirectly increase political participation by having better access to educational resources.However, since no formal mediation test was conducted, this explanation is only a theoretical speculation.
+
+**Model Comparison and Comprehensive Explanation**  
+Comparing Model A to Model B shows that Internet Use alone does not significantly predict voting, but when Age is included, the positive effect of frequent Internet Use on voting becomes apparent. This underscores the importance of accounting for confounding factors, such as age, before concluding whether Internet usage independently affects electoral participation. From Model B to Model C, further adjustments for Income, Gender, and Education confirm that while high-frequency Internet Use maintains its positive relationship with voting, other socioeconomic factors (particularly income and education) also contribute strongly to explaining why people do or do not vote. Model C is therefore the best-fitting model, indicating that daily Internet users are around 2.66 times more likely to vote than non-users, while those who use the Internet a few times per week have about three times higher odds. Meanwhile, middle- and low-income groups are significantly less likely to vote compared to high-income individuals, each additional year of age raises the voting odds by about 5%, and higher education levels increase the likelihood of voting even more. These results highlight the multifaceted nature of voting behavior, where digital engagement, demographic factors, and socioeconomic status all intersect to influence whether someone goes to the polls.
+
+
+### Predict Graph
+```{r}
+library(modelr)    # for data_grid
+library(ggplot2)
+library(broom)     # for augment
+
+# create a prediction grid:
+# vary agea (continuous) and care_intensity (categorical),
+# while fixing income at "Middle" and gender at "Female"
+pred_df <- data_grid(common_data, agea, internet_use) %>%
+  mutate(
+    income = "Middle",  # fixed at "Middle"
+    gndr = "Female",
+    education = "Medium" # fixed at "Female"
+  )
+
+# generate predicted probabilities from Model C using augment
+pred_df <- augment(model_c, newdata = pred_df, type.predict = "response", se_fit = TRUE)
+
+# calculate 95% Confidence Intervals
+pred_df <- pred_df %>%
+  mutate(lower = .fitted - 1.96 * .se.fit,
+         upper = .fitted + 1.96 * .se.fit)
+
+# plot the predicted probabilities
+ggplot(pred_df, aes(x = agea, y = .fitted, color = internet_use, fill = internet_use)) +
+  geom_line(size = 1) +
+  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, color = NA) +
+  labs(
+    title = "Figure 1: Predicted Probability of Voting by Age and Internet Use",
+    subtitle = "For a Female with Middle Income",
+    x = "Age (years)",
+    y = "Predicted Probability of Voting",
+    color = "Internet Use",
+    fill = "Internet Use",
+    caption = "Source: ESS11-UK subset (2024).\nNote: income fixed at 'Middle' and gender fixed at 'Female'."
+  ) +
+  theme_minimal()
+
+
+```
+
+*Figure 1* illustrates how the predicted probability of voting changes across different ages and levels of Internet use for a female respondent with middle income. Each colored curve represents a distinct category of Internet use, ranging from “Never” to “Every Day.” Overall, all curves slope upward as age increases, indicating that older individuals tend to have higher voting probabilities regardless of Internet use frequency. However, the steepness and height of the curves differ across the five usage levels.  
+
+The “Never” category shows the lowest voting probability at younger ages and remains the least likely to vote across the age spectrum. In contrast, the “Every Day” curve starts at a higher baseline probability in the younger age range and continues to outpace the other categories as age advances, suggesting that daily Internet users are consistently more likely to vote than those who use the Internet less frequently. The lines for “Occasional,” “Few Times per Week,” and “Most Days” occupy the middle range, with “Few Times per Week” and “Most Days” generally predicting higher voting probabilities than “Occasional” Internet use.  
+
+These findings imply that, among women with middle incomes, both age and Internet use frequency play an important role in shaping voting behavior. While getting older boosts voting probability across all Internet use categories, individuals who use the Internet more often are predicted to be more likely to vote at any given age. This pattern underscores the combined influence of age-related factors and digital engagement in encouraging political participation.
+
+
+## Multinominom Regression
+```{r}
+voted_data <- final_data_binary %>%
+  filter(voted == "Yes") %>%
+  drop_na(vote, internet_use, income, agea, gndr, education)
+
+covariates <- c("internet_use", "education","income","agea", "gndr","vote" )
+
+
+catVars <- c("internet_use","education", "income", "gndr", "vote")
+
+
+desc_table <- CreateTableOne(
+  vars = covariates,
+  strata = "vote",
+  data = voted_data,
+  factorVars = catVars,
+  addOverall = TRUE
+)
+
+
+desc_table_matrix <- print(
+  desc_table,
+  showAllLevels = TRUE,
+  quote = FALSE,
+  noSpaces = TRUE,
+  printToggle = FALSE,
+  test = FALSE
+)
+
+
+
+  rownames(desc_table_matrix) <- c(
+  "N", 
+  "Internet Use (%)",
+  "  ", 
+  "          ",
+  "", 
+  "                 ",
+  "Education (%)",
+  "                       ",
+  "                             ",
+  "Income (%)", 
+  "  ", 
+  "   ", 
+  "Age (mean(SD))", 
+  "Gender", 
+  "    ", 
+  "Vote Distribution (%)",
+  "    ",
+  "      "
+)
+
+
+kable(desc_table_matrix,format = "latex", longtable = TRUE, booktabs = TRUE,
+      caption = "Descriptive Statistics by Overall and Vote Parties",
+      align = "l"
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    latex_options = c("scale_down", "repeat_header"), 
+    bootstrap_options = c("striped", "hover", "condensed")
+  ) %>%
+  footnote(
+    general = "Data source: ESS11- UK subset (2024).\\",
+    general_title = "Note:This table summarizes only 786 respondents who reported voting, \nhence the distributions for Internet use, education, income, age, \nand gender reflect this sub-sample of voters. ",
+    threeparttable = TRUE,
+    footnote_as_chunk = TRUE,
+    escape = FALSE
+  )
+
+
+
+```
+
+**Interpretation**  
+I have the statistics in Table 3, which I will interpret next. These figures focus exclusively on respondents who reported voting (N = 786) and break down their characteristics by the party they supported—Labour, Other, or Conservative.
+
+**Voting Distribution**  
+Among the voting respondents, 42.9% chose Labour, 18.2% voted for Other parties, and 38.9% supported the Conservative Party. This distribution shows that Labour has the largest share of voters in this subset, followed by Conservatives and then Other parties.
+
+**Internet Use**  
+A substantial majority (79.4%) of all voters use the Internet every day (EveryDay). However, the proportion of daily users varies across parties: Labour (84.0%) and Other (83.2%) both have higher shares of daily Internet use than Conservatives (72.5%). Meanwhile, Conservatives have a slightly larger percentage of “MostDays” users (13.4%) compared to Labour (5.9%) and Other (8.4%). These differences suggest that, among voters, the intensity of Internet usage may be somewhat related to party preference.
+
+**Education Level**  
+Overall, 43.3% of voters have a low education level, 16.2% have a medium level, and 40.6% have a high level of education. By party, Conservatives show the highest proportion of low education (49.0%), while Labour (40.1%) and Other (38.5%) both have lower percentages of low-educated voters. Conversely, a larger share of Labour (47.5%) and Other (48.3%) voters hold a high education level, compared to 29.4% among Conservatives. This indicates that educational attainment varies considerably by party support.
+
+**Income Level**  
+In the total group of voters, 32.3% are high-income, 31.7% are low-income, and 36.0% are middle-income. Among Other-party voters, the proportion of high-income respondents (36.4%) is slightly higher than the overall rate, whereas Labour stands at 30.3% high-income and Conservatives at 32.7%. Low-income representation is somewhat higher for Labour (34.1%) than for Other (30.1%) and Conservative (29.7%). These numbers hint that income distribution among different parties is not uniform and that Other-party voters include a notable share of higher-income individuals.
+
+**Age**  
+The mean age of all voters is 56.90 years (SD = 16.98). Conservative voters have the highest average age (62.20), while Labour voters are the youngest on average (51.71). Those who voted for Other parties fall in between (57.81). The pattern suggests that older voters may be more inclined to support the Conservative Party, whereas Labour’s voter base skews younger.
+
+**Gender**  
+Men slightly outnumber women among all voters (51.8% vs. 48.2%). However, Labour voters are more female (53.7%) than male, while Other-party voters show a slight majority of men (53.8%). Conservatives have the most pronounced male majority (56.9%). These figures imply that party support may also be associated with gender distributions within the voting population.
+
+**Comprehensive Observation**  
+Overall, the table highlights distinct demographic profiles for Labour, Other, and Conservative voters. Labour supporters tend to be younger, more female, and more likely to hold higher education, whereas Conservatives exhibit a higher average age, a stronger male presence, and a greater proportion of lower-educated voters. Other-party voters occupy a middle ground in many respects but show a somewhat larger share of high-income individuals than the overall average. Such patterns underscore the importance of demographic factors—particularly age, gender, education, and income—in shaping party preferences among those who choose to vote.
+
+
+
+### Multinominom Regression Models
+```{r}
+
+
+common_data1 <- voted_data %>%
+  drop_na(vote, internet_use, education, income, agea, gndr) 
+
+
+null_model_multi <- multinom(vote ~ 1, data = common_data1, trace = FALSE)
+
+
+model1 <- multinom(vote ~ internet_use, data = common_data1, trace = FALSE)
+
+model2 <- multinom(vote ~ internet_use + income + agea + gndr+ education, data = common_data1, trace = FALSE)
+
+models_multi <- list("Model 1" = model1,
+                     "Model 2" = model2)
+
+
+mslist_multi <- function(models, data, dv = "vote") {
+  # compute LR tests for each model compared to the null model
+  lrtests <- sapply(models, function(mod) {
+    lr <- lmtest::lrtest(null_model_multi, mod)
+    c(Df = lr$Df[2], Chisq = lr$Chisq[2], `Pr(>Chisq)` = lr$`Pr(>Chisq)`[2])
+  })
+  
+  # create a modelsummary list with tidy and glance information
+  mslist <- modelsummary(models, output = "modelsummary_list", 
+                         statistic = "conf.int", exponentiate = TRUE)
+  
+  for(m in names(models)) {
+    mslist[[m]]$glance$logLik <- round(as.numeric(logLik(models[[m]])), 2)
+    mslist[[m]]$glance$df <- lrtests["Df", m]
+    mslist[[m]]$glance$chisq <- lrtests["Chisq", m]
+    mslist[[m]]$glance$p.value <- round(lrtests["Pr(>Chisq)", m], 3)
+    
+    mslist[[m]]$glance$pseudo.r.squared <- round(1 - (as.numeric(logLik(models[[m]])) / as.numeric(logLik(null_model_multi))), 2)
+    
+    # For multinom models, predict classes (type = "class")
+    pred_class <- as.character(predict(models[[m]], type = "class"))
+actual_class <- as.character(data[[dv]])
+mslist[[m]]$glance$pct.correct <- round(mean(pred_class == actual_class) * 100, 1)
+
+  }
+  return(mslist)
+}
+
+
+modlist_multi <- mslist_multi(models_multi, data = common_data1, dv = "vote")
+
+
+var_labels_multi <- c(
+  "(Intercept)" = "Intercept",
+  "internet_useOccasional" = "Internet Use: Occasional",
+    "internet_useFewTimesPerWeek" = "Internet Use: Few Times/Week",
+    "internet_useMostDays" = "Internet Use: Most Days",
+    "internet_useEveryDay" = "Internet Use: Every Day",
+    "incomeMiddle" = "Income: Middle",
+    "incomeLow" = "Income: Low",
+    "gndrFemale" = "Gender: Female",
+    "agea" = "Age (years)",
+    "educationMedium" = "Education: Medium",
+    "educationHigh" = "Education: High"
+)
+
+
+gof_map_multi <- c("nobs", "aic", "bic", "logLik", "pseudo.r.squared", "chisq", "df", "p.value", "pct.correct")
+
+table3 <- modelsummary(modlist_multi, 
+             coef_rename = var_labels_multi,
+             statistic = "({conf.low}, {conf.high})",
+             stars = TRUE,
+             exponentiate = TRUE, 
+             gof_map = gof_map_multi,
+             fmt = 3,
+             shape = term ~ model + response,
+             title = "Odds Ratios from Multinomial Logistic Regression Models Predicting Party Vote\nReference categories: Party =Labour , Income = High, Gender = Male, Education = Lower",
+             notes = "Note: This table presents the results of multinomial logistic regression models predicting party vote based on internet use and control variables. Model 1 includes only 'internet use' as the predictor, while Model 2 adds income, age,education, and gender. Likelihood ratio tests compare each model to a null model. Source: European Social Survey 2024 (ESS11), UK dataset."
+) %>% 
+   style_tt(latex_options = c("scale_down"), bootstrap_class = "table caption-top", escape = FALSE)
+
+
+table3
+
+
+```
+
+**Multinomial Logistic Regression Overview**  
+These results derive from two multinomial logistic regression models predicting party choice (Other vs. Labour, and Conservative vs. Labour) (Table 4). 
+
+In both models, “Labour” is the reference category, and the baseline groups for the predictors are “High” for Income, “Male” for Gender, and “Lower” for Education. Model 1 includes only Internet Use as the main predictor, while Model 2 incorporates additional controls: Income, Age, Gender, and Education.
+
+
+
+### Model 1: Internet Use Only
+The intercept shows the baseline odds of choosing “Other” or “Conservative” over “Labour” when all other variables are at their reference levels. For example, when a person never uses the Internet, has high income, is male, and has lower education, the baseline odds are represented by the intercept. For the “Other” category, the odds ratio (OR) is 0.286. This means the odds of choosing “Other” over “Labour” are about 71.4% lower than the baseline. For the “Conservative” category, the OR is 0.952, which is very close to 1, showing almost no difference from the baseline, although this result is not statistically significant.
+
+When we look at Internet Use, the effects change. For people who use the Internet occasionally, the OR for “Other” is 2.802. This indicates that the odds of choosing “Other” over “Labour” are about 180% higher than for those who never use the Internet. However, the confidence interval crosses 1, which means this result is not statistically significant. In the case of the “Conservative” group, the OR is 2.311, suggesting a 131% higher odds compared to “Never” users, but this result is also not significant.
+
+For those who use the Internet a few times per week, the OR for “Other” is 0.875. This shows about a 12.5% lower odds of choosing “Other” compared to “Never” users, though the confidence interval includes 1. For the “Conservative” category, the OR is 1.575, which means there is a 57.5% higher odds than “Never” users. However, this result is still not significant.
+
+For nearly daily users (Most Days), the OR for “Other” is 2.099. This shows about 110% higher odds of choosing “Other” compared to “Never” users, even though this result is not significant. For the “Conservative” group, the OR is 2.152. This result is marginally significant and indicates about 115% higher odds of choosing “Conservative” over “Labour” for near-daily Internet users.
+
+For people who use the Internet every day, the OR for “Other” is 1.472, which suggests 47.2% higher odds compared to “Never” users. However, the result is not conclusive because the confidence interval crosses 1. For the “Conservative” group, the OR is 0.824, meaning the odds are 17.6% lower than for “Never” users, but again this is not significant.
+
+Overall, Model 1 has a modest fit. The pseudo R² is 0.010, and the chi-square test (Chi2 = 19.384, p = 0.013) shows that the model has some predictive value, but its explanatory power is limited. The model correctly classifies about 47% of the party choices.
+
+### Model 2: Adding Income, Age, Gender, and Education
+The intercept tells us the baseline odds when all predictors are at their reference levels (never use the Internet, high income, male, and lower education). For the “Other” category, the OR of 0.038 means that the odds of choosing Other over Labour are very low—about 96.2% lower than the baseline. For the “Conservative” category, the OR of 0.070 shows about a 93% reduction compared to the baseline. Both results are highly significant (p < 0.001).
+
+Looking at Internet use, for occasional users the OR is 2.942 for Other and 2.116 for Conservative. This means that compared to Never users, the odds of selecting Other are roughly 194% higher and for Conservative they are about 111.6% higher, although these results are not statistically significant. For those who use the Internet a few times per week, the OR for Other is 1.202 (a 20.2% increase) and for Conservative it is 2.329 (a 132.9% increase), but again these effects are not robust. When users are online most days, the OR for Other is 2.965 (indicating nearly 197% higher odds, p < 0.1) and the OR for Conservative is 3.492 (about 249.2% higher odds, p < 0.01), which is significant. For daily users, the OR is 2.844 for Other (a 184.4% increase, p < 0.05) and 2.131 for Conservative (a 113.1% increase, p < 0.05).
+
+Income also plays a role. For low income, the OR for Other is 0.560, which means a 44% reduction in the odds relative to high income (p < 0.05). For Conservative, the OR is even lower at 0.353, indicating a 64.7% reduction (p < 0.001). For middle income, the OR is 0.654 for Other (a 34.6% reduction, p < 0.1) and 0.596 for Conservative (a 40.4% reduction, p < 0.05).
+
+Age has a positive effect. Each additional year of age increases the odds of choosing Other over Labour by 3.4% (OR = 1.034) and increases the odds of choosing Conservative by 4.8% (OR = 1.048).
+
+Gender shows that women are less likely to choose these parties compared to men. For the Other category, females have an OR of 0.722 (27.8% lower odds), though this is not significant. For Conservative, the OR is 0.640, meaning a 36% reduction in odds, and this result is significant (p < 0.01).
+
+Education also affects the choices. With medium education, the OR is 1.143 for Other (a 14.3% increase, not significant) and 1.533 for Conservative (a 53.3% increase, marginally significant with p < 0.1). With high education, the OR for Other is 1.145 (a 14.5% increase, not significant) while for Conservative it is 0.590 (a 41% reduction, significant at p < 0.05).
+
+Model 2 shows a much better fit compared to Model 1. It has a pseudo R² of 0.070, a significant chi-square statistic (Chi2 = 122.584, p = 0.000), and a higher classification accuracy of 55%. The lower AIC (1556.9) and BIC (1659.6) also indicate improved overall model performance when key demographic and socioeconomic factors are included.
+
+**Comprehensive Explanation** (Table 4)
+In Model 1, which only incorporates Internet Use, there is limited evidence that Internet frequency alone drives voters away from Labour toward Other or Conservative. Once additional controls are included in Model 2, daily or near-daily Internet use emerges as a significant predictor for choosing both Other and Conservative over Labour. Meanwhile, low and middle incomes make it less likely for voters to switch from Labour, while older age appears to increase the likelihood of supporting parties other than Labour. Notably, women show a tendency to be less likely to vote Conservative relative to men, and high education is associated with a decreased probability of selecting Conservative over Labour. Overall, the second model highlights how demographic and socioeconomic factors—particularly age, income, gender, and education—interact with Internet use to shape party preferences, underscoring that daily Internet use can have distinct effects on voter alignments once these confounding variables are taken into account.
+
+### Predict Probabilities
+```{r}
+library(nnet)           
+library(marginaleffects)
+library(ggplot2)
+library(dplyr)
+
+newdata <- expand.grid(
+  internet_use = factor(
+    c("Never", "Occasional", "FewTimesPerWeek", "MostDays", "EveryDay"),
+    levels = c("Never", "Occasional", "FewTimesPerWeek", "MostDays", "EveryDay")
+  ),
+  income = factor("Middle", levels = c("High", "Middle", "Low")),
+  gndr = factor("Female", levels = c("Male", "Female")),
+  education = factor("Medium", levels = c("Low", "Medium", "High")),
+  agea = mean(common_data1$agea, na.rm = TRUE)
+)
+
+pred_df <- predictions(model2, newdata = newdata, type = "probs")
+
+
+ggplot(pred_df, aes(x = internet_use, y = estimate, color = group, fill = group)) +
+  geom_line(aes(group = group), position = position_dodge(width = 0.3)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, group = group),
+              alpha = 0.2, color = NA, position = position_dodge(width = 0.3)) +
+  labs(
+    title = "Figure 2: Predicted Probabilities by Internet Use",
+    subtitle = "For a Female with Middle Income and Medium Education (Age fixed at sample mean)",
+    x = "Internet Use",
+    y = "Predicted Probability of Voting",
+    color = "Party",
+    fill = "Party",
+    caption = "Source: ESS 2024.\nNote: Income fixed at 'Middle',\nGender fixed at 'Female',\nEducation fixed at 'Medium',\nAge fixed at sample mean."
+  ) +
+  theme_minimal()
+
+```
+*Figure 2* displays the predicted probabilities of voting for Labour, Other, or Conservative across different levels of Internet use for a hypothetical *female voter with middle income and medium education*, holding age constant at the sample mean. Each colored line corresponds to one party’s likelihood, with the shaded areas representing approximate confidence intervals. Overall, Labour’s curve tends to be higher than the others at lower or moderate levels of Internet use, whereas Conservative appears to gain ground—or even surpass Labour—among those who report more frequent online engagement (e.g., “MostDays” or “EveryDay”). The “Other” party line generally remains below Labour and Conservative but shows some upward movement as Internet use increases, suggesting that high-frequency users may be more open to alternatives beyond the two main parties. The wide intervals in certain segments also highlight variability, implying that these relationships may differ for individuals with distinct demographic or socioeconomic characteristics.
+
+
+# Conclusion
+My study set out to answer three key research questions and test three corresponding hypotheses about how internet use, demographic factors, and socioeconomic status shape voting behavior and party choice. Below is a concise summary of how my findings address each research question and hypothesis, along with potential avenues for improvement:
+
+First, I investigated whether higher frequency of internet use increases the likelihood of voting. In the binary logistic regression models, I found that when internet use is the only predictor (Model A), there is little evidence that frequency alone influences voting. However, after I control for confounding variables—specifically age, income, gender, and education (as in Models B and C)—the effect of internet use becomes much clearer. In Model B, daily internet users had significantly higher odds (OR = 4.09 for “Every Day”) of voting compared to non-users. This finding indicates that, once I account for age, the odds of voting for daily internet users are roughly 4 times higher than for those who never use the internet. These results *support Hypothesis 1*, which proposed that individuals who use the internet more frequently are more likely to vote. In simple terms, frequent internet users, once other factors are considered, seem more engaged in political participation.
+
+Second, I examined whether internet use influences political party choice among voters. Using multinomial logistic regression models where Labour is the reference category, I compared the likelihood of choosing Other or Conservative parties. The results from Model 2 show that high-frequency internet users are significantly more likely to select parties other than Labour. For instance, in Model 2, the odds ratio for daily internet users choosing the Conservative Party is 2.131, meaning daily users have about 113% higher odds of choosing Conservative over Labour than non-users. Similarly, for the Other category, the odds ratio is 2.844, indicating an 184% increase in the odds of choosing Other over Labour for daily users. Although not every internet use level showed statistically significant differences, these findings overall *support Hypothesis 2* that frequent internet users display different party preferences. Essentially, my data suggest that higher internet use correlates with a shift away from Labour toward either Conservative or Other parties.
+
+Third,  my study aimed to determine whether the effect of internet use on voting behavior varies by age, gender, income, and education. Our regression models clearly show that once these demographic and socioeconomic factors are added (in Model 2), the predictive power of internet use on both voting and party choice increases. Older age is associated with a higher likelihood of voting, as each additional year increases the odds of voting by about 5% and also raises the probability of choosing Conservative over Labour. Income plays an important role too: compared with high-income individuals, those with middle or low income have significantly lower odds of voting for either Conservative or Other parties relative to Labour (for example, low-income voters have about 64.7% lower odds of choosing Conservative). Gender differences also emerge: female voters are notably less likely (about 36% lower odds) to choose Conservative over Labour, although the effect is less pronounced for the Other category. Education further influences party preference. For example, voters with high education are less likely to vote Conservative relative to Labour. These results *confirm Hypothesis 3*, showing that the impact of internet use on voting behavior indeed varies with age, gender, income, and education. In other words, demographic and socioeconomic factors not only directly affect voting behavior but also modify how internet use influences party choice.
+
+**Limitations**
+
+My data is cross-sectional, meaning it only captures a single point in time, which makes it difficult to draw strong causal conclusions about the effect of internet use on voting. Additionally, my measure of internet use is limited to frequency and does not capture the type of online activities (e.g., social media, news consumption, entertainment) that might have different effects on political behavior. 
+
+I must point out that due to limited knowledge of British political parties, this article simply divides political parties into three categories - the two major parties (Labour and Conservative) and other parties. Although this classification is convenient for comparing major political forces, it may ignore the subtle differences between small parties in British politics (such as the Liberal Democrats, the Green Party, the Scottish National Party, etc.). However, since the number of supporters of these small parties is relatively small, they may not have a statistically significant impact, so this simple classification is also reasonable in practical analysis. If the political parties are divided more finely, richer explanations may be obtained in theory, but in my data sample, the sample size of small parties may not be sufficient to reveal statistically significant effects.
+
+The study is also confined to a specific national context (the ESS11-UK subset, 2024), so the results may not generalize to other countries or periods. Finally, although we controlled for key demographic factors, further analysis using interaction terms (for example, Internet Use × Age or Internet Use × Education) could provide more insight into how these variables interact to influence voting behavior.
+
+In addition, this study did not formally test the mediating effect of education level, but only indirectly suggested its possibility through model comparison. Other potential mediating variables (such as political knowledge or information acquisition channels) may also link Internet use and voting behavior, and more detailed measurements need to be included in the future to reveal the complete mechanism.
+
+In summary, my research provides support for all three hypotheses. I found that after controlling for age, income, gender, and education, frequent internet use is positively associated with a higher likelihood of voting. Moreover, high-frequency internet users are more likely to vote for Conservative or Other parties rather than Labour, supporting the idea that internet use influences party choice. Finally, my findings clearly indicate that the effects of internet use vary according to  socioeconomic factors, with older age, higher income, and higher education having their own distinct influences on voting behavior and party preference. Although the mediating effect of education level has not been formally tested, the attenuation of its effect size is consistent with the expectations of the digital divide theory [@VanDijk2006].Future research should address these limitations by using longitudinal data, more detailed measures of internet behavior, and exploring interaction effects to better understand these complex relationships.
+
+# References
+
+Zhuravskaya, E., Petrova, M., & Enikolopov, R. (2020). Political effects of the internet and social media. *Annual review of economics*, 12(1), 415-438. <https://doi.org/10.1146/annurev-economics-081919-050239>
+
+Heblich, S. (2016). The effect of the internet on voting behavior. *IZA World of Labor*. <https://doi.org/10.15185/izawol.294>
+
+Van Dijk, J. A. (2006). Digital divide research, achievements and shortcomings. *Poetics*, 34(4-5), 221-235. <https://doi.org/10.1016/j.poetic.2006.05.004>
