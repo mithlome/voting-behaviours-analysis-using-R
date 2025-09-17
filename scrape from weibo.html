@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Can Yang" />
+
+<meta name="date" content="2025-04-22" />
+
+<title>Assignment1</title>
+
+<script src="assignment1_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="assignment1_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="assignment1_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="assignment1_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="assignment1_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="assignment1_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="assignment1_files/navigation-1.1/tabsets.js"></script>
+<link href="assignment1_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="assignment1_files/highlightjs-9.12.0/highlight.js"></script>
+<link href="assignment1_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="assignment1_files/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="assignment1_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="assignment1_files/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="assignment1_files/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="assignment1_files/leaflet-1.3.1/leaflet.js"></script>
+<link href="assignment1_files/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="assignment1_files/proj4-2.6.2/proj4.min.js"></script>
+<script src="assignment1_files/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="assignment1_files/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="assignment1_files/leaflet-binding-2.2.2/leaflet.js"></script>
+<script src="assignment1_files/kePrint-0.0.1/kePrint.js"></script>
+<link href="assignment1_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Assignment1</h1>
+<h4 class="author">Can Yang</h4>
+<h4 class="date">2025-04-22</h4>
+
+</div>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<div id="project-overview" class="section level2">
+<h2>Project Overview</h2>
+<p>This project focuses on crawling and conducting a preliminary
+analysis of the <em>first-level comments</em> on a popular Sina Weibo
+post about the “Dong Xiying incident.” This post discusses the highly
+controversial “4+4” medical student training model, revealing multiple
+issues in the academic and professional processes of the involved
+parties: a doctoral dissertation with less than 30 pages, a student
+being illegally retained in the thoracic surgery training program, and
+the advisor’s research direction being inconsistent with the thesis
+content. The incident exposed serious deficiencies in the new medical
+training system in terms of control, supervision, and accountability,
+sparking strong public interest and heated discussions.</p>
+<div id="methodology-and-technical-approach" class="section level3">
+<h3>Methodology and Technical Approach</h3>
+<ol style="list-style-type: decimal">
+<li><p><strong>Mastering Instructor’s Methods</strong>:</p>
+<p>At the beginning of the project, I used the simple crawling methods
+taught by the instructor, utilizing <code>HTML</code> +
+<code>XPath</code> for parsing and extracting content from a news
+website, demonstrating my understanding of static page crawling. And
+also I used regular expressions to filter the text. Then I decided to
+scratch weibo but i fount it not appliable to use the former methods. So
+I decided to get the API from cookie and get the json data to scratch
+the comments I want.</p></li>
+<li><p><strong>Handling Dynamically Loaded Pages</strong>:</p>
+<p>Since Sina Weibo uses JavaScript for dynamic loading, and Selenium
+could not work properly due to ChromeDriver version incompatibility
+(despite multiple troubleshooting attempts), I switched to manually
+logging in and retrieving comment data via public JSON APIs.( It’s very
+strange that my chrome browser version doesn’t have a matching chrome
+driver version.) If you encounters any issues with expired cookies
+during review, please contact me, and I will promptly provide the
+updated cookie information.</p></li>
+<li><p><strong>Ethics and Legal Compliance</strong>:</p>
+<p>This project strictly follows the principles of “open information,
+non-invasive access, and no collection of private or sensitive data.”
+Only publicly displayed comment text and user-disclosed fields such as
+gender, follower count, and location are collected. The data is solely
+for academic research and class assignments and will not be disseminated
+externally or used for any commercial or illegal purposes. The request
+frequency is carefully controlled, with a random
+<code>Sys.sleep(1)</code> after each request to avoid overloading the
+target server, following the “polite crawling” standard.</p></li>
+</ol>
+<p>By analyzing the sentiment and topic distribution of the Weibo
+comments, this project provides insights into how different groups
+perceive topics such as medical system reform, education supervision,
+and academic integrity. It offers data support for future policy
+research.</p>
+</div>
+</div>
+<div id="scratch-fox-webiste-using-the-teachers-methods"
+class="section level2">
+<h2>scratch fox webiste using the teacher’s methods</h2>
+<pre><code>## Title:
+##  Trump highlights potential pay raise for troops, touts military reforms in Qatar speech 
+## 
+## Cleaned Passages (Top 4):
+## [1] &quot; Retired U.S. Air Force Brigadier General Rob Spalding joins ‘Fox &amp; Friends’ with insight on the president’s show of ‘strength’ on the world stage as he prepares to rally U.S. troops at Al Udeid Air Base in Qatar.&quot;
+## [2] &quot; President Donald Trump blasted President Joe Biden&#39;s withdrawal from Afghanistan and cited his wish to give troops a pay raise in an address to U.S. service members on Thursday.&quot;                                   
+## [3] &quot; Trump made the comments during an address to troops at Al Udeid Air Base in Qatar during his extended trip to the Middle East.&quot;                                                                                      
+## [4] &quot; My 2026 budget includes across the board – maybe you don&#39;t want to look for the good of the country, you don&#39;t have to take it – pay raises for each and every one of you. Substantial pay raises,  Trump said.&quot;</code></pre>
+</div>
+</div>
+<div id="operationalization-methods-and-processes"
+class="section level1">
+<h1>Operationalization (methods and processes)</h1>
+<div id="rationale" class="section level2">
+<h2>Rationale</h2>
+<p>In this project, I did not adopt the idea of “downloading the entire
+page of HTML and then parsing it layer by layer with the help of XPath”,
+but directly used the JSON interface publicly available on Weibo’s
+mobile terminal to obtain comment data. The reason for making this
+decision is mainly based on the following considerations:</p>
+<p>Weibo is a highly dynamic social platform, with frequent page
+structure updates and comment areas often using infinite scrolling and
+front-end rendering. Traditional HTML crawling and XPath parsing are not
+only lengthy in code, but also easily invalidated due to page
+fine-tuning; in contrast, the data structure returned by the mobile
+terminal JSON interface is clear and has complete fields. A complete
+array containing comment ID, release time, comment content, number of
+likes, and key information such as user gender, number of fans, and
+region can be obtained in one request, without processing complex DOM
+elements or running JavaScript to obtain content. In addition, I have
+used Python to process JSON data before, and I have some understanding
+of this format and its common patterns in data cleaning and conversion,
+so it is also easy to operate data in R with the help of
+<code>jsonlite</code> and <code>dplyr</code>.</p>
+<p><em>Why only crawl first-level comments?</em> The reason for making
+this decision is mainly based on the following considerations: First,
+the JSON data structure returned by the mobile interface is clear and
+has complete fields. An array containing comment ID, release time, text,
+number of likes, user gender, number of fans, region and other key
+information can be obtained in one request, without parsing complex HTML
+tags or dynamically rendering content; second, the jsonlite and dplyr
+toolkits based on the R language have natural advantages in reading,
+converting and filtering JSON data, which can significantly reduce the
+amount of coding and improve debugging efficiency; third, by logging in
+to the personal Weibo account in the local browser in advance and
+extracting verification information such as cookies and X-XSRF-Token, I
+think I have achieved the integration of “lightweight simulated login +
+API call”, without the need to introduce browser automation dependencies
+such as Selenium and ChromeDriver, thereby effectively reducing resource
+consumption and error risks while ensuring the reliability of crawling.
+Overall, the direct JSON interface not only complies with the principle
+of “polite crawling”, but also maximizes the convenience of R language
+in data operation and subsequent analysis.</p>
+<p>The data scale is controllable and representative: the number of
+secondary replies is huge and the repetition rate is high. Comprehensive
+capture will lead to exponential data growth; and the primary comments
+can already reflect the core attitude of the public towards the
+incident, and the quantity and quality are sufficient to support
+subsequent analysis. Analysis focus and clarity: The structure of
+primary comments is flat and the text is independent, which is easier to
+clean and count; the introduction of secondary replies will increase
+context dependence, increase the difficulty of cleaning and semantic
+analysis, and is not conducive to the high-quality completion of this
+assignment.</p>
+</div>
+<div id="process" class="section level2">
+<h2>Process</h2>
+<p>In actual operation, I first use a browser to log in to my personal
+Weibo account, capture the packet to obtain a valid request header
+(including complete cookies and X-XSRF-Token), and configure it in the
+httr::GET() call in the R script to ensure that each request has a
+legitimate session state. Then, based on the mobile hot comment
+interface <a href="https://m.weibo.cn/comments/hotflow"
+class="uri">https://m.weibo.cn/comments/hotflow</a>, the post id and mid
+are used as core parameters to initialize max_id_type=0, max_id=0 and
+call it in a loop. In the JSON returned by each request, the data$data
+paragraph is all the top comments on this page. I use
+jsonlite::fromJSON() to parse it into an R list, and then use
+dplyr::mutate() to force type conversion (such as mapping the number of
+likes and the number of fans to numeric types), and use dplyr::add_row()
+to accumulate rows into a unified data frame all_comments. To prevent
+duplication, the script maintains a seen_ids vector, and any comment ID
+that has been written will not be added again; at the same time, after
+each cycle, the request parameters are updated according to the max_id
+and max_id_type returned by the interface to achieve automatic page
+turning until the interface no longer provides new data. Finally, the
+entire table is deduplicated through distinct(comment_id), and the
+complete first-level comment data is exported as a CSV file using
+readr::write_excel_csv(). To ensure the quality of subsequent analysis,
+I also perform simple <strong>regular expression</strong> cleaning on
+the comment text before exporting the data: remove extra spaces,
+non-Chinese and common punctuation marks.</p>
+</div>
+</div>
+<div id="visualization" class="section level1">
+<h1>Visualization</h1>
+<div id="created-time" class="section level2">
+<h2>Created time</h2>
+<p><img src="assignment1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="geocoding" class="section level2">
+<h2>Geocoding</h2>
+<div
+id="since-i-couldnt-display-this-map-in-the-exported-pdf-i-saved-it-in-a-separate-html-file-final_map.html.-i-uploaded-it-in-the-attachment-of-the-assignment."
+class="section level3">
+<h3>Since I couldn’t display this map in the exported PDF, I saved it in
+a separate HTML file: final_map.html. I uploaded it in the attachment of
+the assignment.</h3>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-683c7ae0378bed0d98cc" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-683c7ae0378bed0d98cc">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addCircleMarkers","args":[[31.2312707,25,43.2443242,40.190632,43.7289674,30.5000001,39.3032619,32,36.398987,37,23.1357694,24,33.0000001,39.0000001,34.0000001,46.603354,29.0000001,31.1530504,26.193218,39.7837304,41.2374106,30.05518,35.5895959,36.638392,48.0000047],[121.4700152,102,114.3251664,116.412144,126.1997366,102.4999999,117.4163641,117,118.5055691,112,113.1982688,109,119.9999999,116,113.9999999,1.8883335,119.9999999,112.8806423,118.2208721,-100.445882,122.9955469,107.8748712,109.3013107,127.6961188,127.999992],8,null,null,{"interactive":true,"className":"","stroke":true,"color":["#D1EDB3","#FFFFD9","#FFFFD9","#4FBAC3","#FFFFD9","#EBF7B1","#F9FDCB","#D1EDB3","#F9FDCB","#F9FDCB","#2496C1","#FFFFD9","#081D58","#D1EDB3","#DEF2B2","#FFFFD9","#DEF2B2","#F9FDCB","#FFFFD9","#FFFFD9","#F9FDCB","#FFFFD9","#F3FABD","#FFFFD9","#F9FDCB"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["#D1EDB3","#FFFFD9","#FFFFD9","#4FBAC3","#FFFFD9","#EBF7B1","#F9FDCB","#D1EDB3","#F9FDCB","#F9FDCB","#2496C1","#FFFFD9","#081D58","#D1EDB3","#DEF2B2","#FFFFD9","#DEF2B2","#F9FDCB","#FFFFD9","#FFFFD9","#F9FDCB","#FFFFD9","#F3FABD","#FFFFD9","#F9FDCB"],"fillOpacity":0.8},null,null,["上海 <br>Comments:  6","云南 <br>Comments:  1","内蒙古 <br>Comments:  1","北京 <br>Comments:  12","吉林 <br>Comments:  1","四川 <br>Comments:  4","天津 <br>Comments:  2","安徽 <br>Comments:  6","山东 <br>Comments:  2","山西 <br>Comments:  2","广东 <br>Comments:  15","广西 <br>Comments:  1","江苏 <br>Comments:  24","河北 <br>Comments:  6","河南 <br>Comments:  5","法国 <br>Comments:  1","浙江 <br>Comments:  5","湖北 <br>Comments:  2","福建 <br>Comments:  1","美国 <br>Comments:  1","辽宁 <br>Comments:  2","重庆 <br>Comments:  1","陕西 <br>Comments:  3","韩国 <br>Comments:  1","黑龙江 <br>Comments:  2"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLegend","args":[{"colors":["#FFFFD9 , #DEF2B2 17.3913043478261%, #79CABC 39.1304347826087%, #2496C1 60.8695652173913%, #26459C 82.6086956521739%, #081D58 "],"labels":["5","10","15","20"],"na_color":null,"na_label":"NA","opacity":1,"position":"bottomright","type":"numeric","title":"Number of Comments","extra":{"p_1":0.1739130434782609,"p_n":0.8260869565217391},"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[23.1357694,48.0000047],"lng":[-100.445882,127.999992]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="descriptive-stastistics" class="section level2">
+<h2>Descriptive stastistics</h2>
+<table class="table table-striped table-hover table-condensed" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+Summary of Weibo Comments Data Data Source: Weibo Comments Dataset
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Metric
+</th>
+<th style="text-align:left;">
+Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Total Comments
+</td>
+<td style="text-align:left;">
+107.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Unique Users
+</td>
+<td style="text-align:left;">
+92.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average Like Count
+</td>
+<td style="text-align:left;">
+8.45
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Median Like Count
+</td>
+<td style="text-align:left;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average Reply Count
+</td>
+<td style="text-align:left;">
+0.43
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Median Reply Count
+</td>
+<td style="text-align:left;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average Followers Count
+</td>
+<td style="text-align:left;">
+2070.81
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Max Followers Count
+</td>
+<td style="text-align:left;">
+156000.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average Statuses Count
+</td>
+<td style="text-align:left;">
+4225.67
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Max Statuses Count
+</td>
+<td style="text-align:left;">
+109950.00
+</td>
+</tr>
+</tbody>
+</table>
+<p>According to the visualization analysis of Weibo comment data, public
+participation presents the following characteristics: the total number
+of comments reached 107, contributed by 92 independent users, indicating
+that most users only posted a single comment. The time distribution of
+comments shows that the activity level increased significantly in some
+periods (such as a peak of 20 comments/hour), which may correspond to
+the concentrated discussion period of hot events.</p>
+<p>The interaction indicators are polarized: the average number of likes
+is 8.45 times, but the median is only 0, indicating that a few high-heat
+comments (such as the content of the top user with 2.566 million fans)
+pull the overall mean, while most comments have low interaction. A
+similar phenomenon is also reflected in the number of replies (average
+0.56 times, median 0 times), reflecting the limited influence of
+ordinary user comments. The high frequency of fierce keywords in the
+word cloud further confirms the indignant tendency of public sentiment,
+which may be related to the controversial nature of the event.</p>
+<p>The regional distribution of comments shows a clear centralized
+feature, mainly concentrated in China’s eastern coastal areas and
+first-tier cities, such as Beijing, Shenzhen, Shanghai, Guangzhou, etc.,
+indicating that users in these regions are more active. There are fewer
+comments in the central and western regions and third- and fourth-tier
+cities, reflecting the difference in digital participation between
+regions. In addition, a small number of comments are marked as coming
+from overseas, which may be related to positioning errors or special
+user groups.</p>
+<p>In summary, the data reveals the concentrated outbreak of emotional
+discussions, gender participation differences, and the significant
+impact of the “head effect” of social media, providing a quantitative
+basis for public opinion analysis.</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

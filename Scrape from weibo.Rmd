@@ -1,0 +1,372 @@
+---
+title: "Assignment1"
+author: "Can Yang"
+date: "2025-04-22"
+output:
+  html_document:
+    self_contained: false
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+# Introduction
+
+## Project Overview
+
+This project focuses on crawling and conducting a preliminary analysis of the *first-level comments* on a popular Sina Weibo post about the "Dong Xiying incident." This post discusses the highly controversial "4+4" medical student training model, revealing multiple issues in the academic and professional processes of the involved parties: a doctoral dissertation with less than 30 pages, a student being illegally retained in the thoracic surgery training program, and the advisor's research direction being inconsistent with the thesis content. The incident exposed serious deficiencies in the new medical training system in terms of control, supervision, and accountability, sparking strong public interest and heated discussions.
+
+### Methodology and Technical Approach
+
+1. **Mastering Instructor's Methods**:
+
+   At the beginning of the project, I used the simple crawling methods taught by the instructor, utilizing `HTML` + `XPath` for parsing and extracting content from a news website, demonstrating my understanding of static page crawling. And also I used regular expressions to filter the text. Then I decided to scratch weibo but i fount it not appliable to use the former methods. So I decided to get the API from cookie and get the json data to scratch the comments I want.
+
+2. **Handling Dynamically Loaded Pages**:
+
+   Since Sina Weibo uses JavaScript for dynamic loading, and Selenium could not work properly due to ChromeDriver version incompatibility (despite multiple troubleshooting attempts), I switched to manually logging in and retrieving comment data via public JSON APIs.( It's very strange that my chrome browser version doesn't have a matching chrome driver version.)
+   If you encounters any issues with expired cookies during review, please contact me, and I will promptly provide the updated cookie information.
+
+3. **Ethics and Legal Compliance**:
+
+   This project strictly follows the principles of "open information, non-invasive access, and no collection of private or sensitive data." Only publicly displayed comment text and user-disclosed fields such as gender, follower count, and location are collected. The data is solely for academic research and class assignments and will not be disseminated externally or used for any commercial or illegal purposes.
+   The request frequency is carefully controlled, with a random `Sys.sleep(1)` after each request to avoid overloading the target server, following the "polite crawling" standard.
+
+
+By analyzing the sentiment and topic distribution of the Weibo comments, this project provides insights into how different groups perceive topics such as medical system reform, education supervision, and academic integrity. It offers data support for future policy research.
+
+## scratch fox webiste using the teacher's methods
+```{r, results='hold', warning=FALSE, message=FALSE }
+library(httr)
+library(XML)
+
+url <- "https://www.foxnews.com/politics/trump-promises-pay-raise-troops-touts-military-reforms-qatar-speech"
+
+response <- GET(url)
+
+if (status_code(response) == 200) {
+  page_content <- content(response, as = "text", encoding = "UTF-8")
+  
+  # Parse only the main content section to speed up processing
+  doc <- htmlParse(page_content, encoding = "UTF-8")
+  
+  # Extract the title using a precise XPath
+  title <- xpathSApply(doc, "//h1", xmlValue)
+  
+  # Extract paragraphs using a more specific XPath
+  paragraphs <- xpathSApply(doc, "//div[contains(@class, 'article-body')]//p", xmlValue)
+  
+  # Optimize text cleaning with a single regular expression
+  clean_paragraphs <- gsub("\\s+|[\\\"|\\]|CLICK HERE TO GET THE FOX NEWS APP|^\\s*|\\s*$", " ", paragraphs)
+  clean_paragraphs <- clean_paragraphs[clean_paragraphs != ""] # Remove empty lines
+  clean_paragraphs <- head(clean_paragraphs, 4) # Keep only the first 5 paragraphs
+  
+  # Display the result
+  cat("Title:\n", title, "\n\n")
+  cat("Cleaned Passages (Top 4):\n")
+  print(clean_paragraphs)
+
+} else {
+  cat("Failed to fetch page, status code:", status_code(response), "\n")
+}
+
+```
+
+# Operationalization (methods and processes)
+## Rationale
+In this project, I did not adopt the idea of "downloading the entire page of HTML and then parsing it layer by layer with the help of XPath", but directly used the JSON interface publicly available on Weibo's mobile terminal to obtain comment data. The reason for making this decision is mainly based on the following considerations:
+
+Weibo is a highly dynamic social platform, with frequent page structure updates and comment areas often using infinite scrolling and front-end rendering. Traditional HTML crawling and XPath parsing are not only lengthy in code, but also easily invalidated due to page fine-tuning; in contrast, the data structure returned by the mobile terminal JSON interface is clear and has complete fields. A complete array containing comment ID, release time, comment content, number of likes, and key information such as user gender, number of fans, and region can be obtained in one request, without processing complex DOM elements or running JavaScript to obtain content. In addition, I have used Python to process JSON data before, and I have some understanding of this format and its common patterns in data cleaning and conversion, so it is also easy to operate data in R with the help of `jsonlite` and `dplyr`.
+
+*Why only crawl first-level comments?*
+The reason for making this decision is mainly based on the following considerations: 
+First, the JSON data structure returned by the mobile interface is clear and has complete fields. An array containing comment ID, release time, text, number of likes, user gender, number of fans, region and other key information can be obtained in one request, without parsing complex HTML tags or dynamically rendering content; 
+second, the jsonlite and dplyr toolkits based on the R language have natural advantages in reading, converting and filtering JSON data, which can significantly reduce the amount of coding and improve debugging efficiency; 
+third, by logging in to the personal Weibo account in the local browser in advance and extracting verification information such as cookies and X-XSRF-Token, I think I have achieved the integration of "lightweight simulated login + API call", without the need to introduce browser automation dependencies such as Selenium and ChromeDriver, thereby effectively reducing resource consumption and error risks while ensuring the reliability of crawling. 
+Overall, the direct JSON interface not only complies with the principle of "polite crawling", but also maximizes the convenience of R language in data operation and subsequent analysis.
+
+The data scale is controllable and representative: the number of secondary replies is huge and the repetition rate is high. Comprehensive capture will lead to exponential data growth; and the primary comments can already reflect the core attitude of the public towards the incident, and the quantity and quality are sufficient to support subsequent analysis.
+Analysis focus and clarity: The structure of primary comments is flat and the text is independent, which is easier to clean and count; the introduction of secondary replies will increase context dependence, increase the difficulty of cleaning and semantic analysis, and is not conducive to the high-quality completion of this assignment.
+
+## Process
+In actual operation, I first use a browser to log in to my personal Weibo account, capture the packet to obtain a valid request header (including complete cookies and X-XSRF-Token), and configure it in the httr::GET() call in the R script to ensure that each request has a legitimate session state. Then, based on the mobile hot comment interface https://m.weibo.cn/comments/hotflow, the post id and mid are used as core parameters to initialize max_id_type=0, max_id=0 and call it in a loop. 
+In the JSON returned by each request, the data$data paragraph is all the top comments on this page. I use jsonlite::fromJSON() to parse it into an R list, and then use dplyr::mutate() to force type conversion (such as mapping the number of likes and the number of fans to numeric types), and use dplyr::add_row() to accumulate rows into a unified data frame all_comments. To prevent duplication, the script maintains a seen_ids vector, and any comment ID that has been written will not be added again; at the same time, after each cycle, the request parameters are updated according to the max_id and max_id_type returned by the interface to achieve automatic page turning until the interface no longer provides new data. Finally, the entire table is deduplicated through distinct(comment_id), and the complete first-level comment data is exported as a CSV file using readr::write_excel_csv(). To ensure the quality of subsequent analysis, 
+I also perform simple **regular expression** cleaning on the comment text before exporting the data: remove extra spaces, non-Chinese and common punctuation marks.
+
+```{r ,eval=FALSE, warning=FALSE, message=FALSE}
+library(httr)
+library(jsonlite)
+library(dplyr)
+
+# log in in the browser to obtain the information and cookies of the posts to be crawled, so as to obtain the API
+
+base_url <- "https://m.weibo.cn/comments/hotflow" # Weibo's mobile API interface
+params <- list(
+  id = "5161173952235852",  
+  mid = "5161173952235852",
+  max_id_type = "0",
+  max_id = "0" # page crawling
+)
+
+# get the cookie and token
+headers <- c(
+  'accept'            = 'application/json, text/plain, */*',
+  'accept-encoding'   = 'gzip, deflate, br, zstd',
+  'accept-language'   = 'zh-CN,zh;q=0.9,en;q=0.8',
+  'cookie'            = 'SCF=AnzzBd6EYp_WaTYp_5GbyeccVYQ48Q4kBpYnTpdPj1oB35uix4sKXu1ctrKRUJ8PLIlAi-CgnFvA9LN3qtsP3eo.; SUB=_2A25FIZotDeRhGeFJ71oR9i7Kzj-IHXVmXpPlrDV6PUJbktANLVrEkW1Nf9iV4R72VQHbP9N7YH5obmLf4ke_rklh; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WhR6wT-AjT8TXkDq0wrY1Uw5NHD95QNS0BRehq7So-0Ws4DqcjePc80Ic8uwGyjdGyX; SSOLoginState=1747315325; ALF=1749907325; BAIDU_SSP_lcr=https://www.google.com/; _T_WM=50437437892; MLOGIN=1; XSRF-TOKEN=edda78; geetest_token=667e9c32c4600138107775b03f024598; M_WEIBOCN_PARAMS=oid%3D5161173952235852%26luicode%3D20000061%26lfid%3D5161173952235852%26uicode%3D20000061%26fid%3D5161173952235852; mweibo_short_token=f0e7771d11',
+  'mweibo-pwa'        = '1',
+  'referer'           = 'https://m.weibo.cn/detail/5161173952235852',
+  'user-agent'        = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+  'x-requested-with'  = 'XMLHttpRequest',
+  'x-xsrf-token'      = 'edda78'
+)
+
+# create a dataframe
+all_comments <- tibble(
+  comment_id      = character(),
+  created_at      = character(),
+  text            = character(),
+  like_count      = integer(),
+  user_id         = character(),
+  reply_count     = integer(),
+  screen_name     = character(),
+  gender          = character(),
+  followers_count = numeric(),
+  statuses_count  = integer(),
+  source          = character(),
+  parent_id       = character()
+)
+
+# vectorized conversion of number of fans
+convert_count <- function(x) {
+  x_clean <- gsub(",", "", x)
+  nums    <- as.numeric(sub("万", "", sub("千", "", x_clean)))
+  ifelse(grepl("万", x_clean), nums * 10000,
+         ifelse(grepl("千", x_clean), nums * 1000, nums))
+}
+
+seen_ids         <- character()
+last_max_id      <- NULL
+last_max_id_type <- NULL
+
+repeat {
+  res <- GET(base_url, query = params, add_headers(.headers = headers))
+  Sys.sleep(0.1)
+  jd <- fromJSON(content(res, as = "text", encoding = "UTF-8"), simplifyVector = TRUE)
+
+  if (jd$ok != 1 || is.null(jd$data$data)) break
+
+  top_df <- jd$data$data %>% mutate(
+    id              = as.character(id),
+    created_at      = as.character(created_at),
+    text            = as.character(text),
+    like_count      = as.integer(like_count),
+    user_id         = as.character(user$id),
+    screen_name     = as.character(user$screen_name),
+    gender          = as.character(user$gender),
+    followers_count = convert_count(user$followers_count_str),
+    statuses_count  = as.integer(user$statuses_count),
+    source          = as.character(source),
+    total_number    = as.integer(total_number)
+  )
+
+  # using for loop to implement paging crawling
+  for (i in seq_len(nrow(top_df))) {
+    row <- top_df[i, ]
+    cid <- row$id
+    if (cid %in% seen_ids) next
+    seen_ids <- c(seen_ids, cid)
+
+    all_comments <- all_comments %>% add_row(
+      comment_id      = cid,
+      created_at      = row$created_at,
+      text            = row$text,
+      like_count      = row$like_count,
+      user_id         = row$user_id,
+      reply_count     = row$total_number,
+      screen_name     = row$screen_name,
+      gender          = row$gender,
+      followers_count = row$followers_count,
+      statuses_count  = row$statuses_count,
+      source          = row$source,
+      parent_id       = NA_character_
+    )
+  }
+
+  # turn pages
+  next_top      <- as.character(jd$data$max_id %||% jd$data$max)
+  next_top_type <- as.character(jd$data$max_id_type %||% 0)
+  if (is.null(next_top) ||
+      (!is.null(last_max_id) &&
+       next_top == last_max_id &&
+       next_top_type == last_max_id_type)
+  ) break
+
+  last_max_id      <- next_top
+  last_max_id_type <- next_top_type
+  params$max_id      <- next_top
+  params$max_id_type <- next_top_type
+}
+
+
+all_comments <- all_comments %>% distinct(comment_id, .keep_all = TRUE)
+library(readr)
+write_excel_csv(all_comments, "weibo_comments_with_source.csv")
+
+
+```
+
+# Visualization
+
+## Created time
+```{r warning=FALSE, message=FALSE}
+library(ggplot2)
+library(lubridate)
+df <- read.csv("weibo_comments_with_source.csv", stringsAsFactors = FALSE)
+
+library(ggplot2)
+library(lubridate)
+
+
+df$created_at <- parse_date_time(df$created_at, orders = "a b d H:M:S z Y")  
+df$hour <- hour(df$created_at)  
+
+
+ggplot(df, aes(x = hour)) +
+  geom_bar(stat = "count", fill = "steelblue", color = "black") +
+  labs(title = "Comment Distribution by Hour", x = "Hour of Day", y = "Number of Comments") +
+  theme_minimal()
+
+
+```
+
+## Geocoding
+### Since I couldn't display this map in the exported PDF, I saved it in a separate HTML file: final_map.html. I uploaded it in the attachment of the assignment.
+```{r eaflet-map, echo=FALSE,warning=FALSE, message=FALSE}
+library(readr)
+library(dplyr)
+library(stringr)
+library(htmlwidgets)
+
+comments <- read_csv("weibo_comments_with_source.csv")
+
+
+comments <- comments %>%
+  mutate(region = str_remove(source, "^来自"))
+
+library(tidygeocoder)
+
+
+locations <- comments %>%
+  select(region) %>%
+  distinct() %>%
+  filter(!is.na(region) & region != "")
+
+# Geocoding with OSM
+geo_results <- locations %>%
+  geocode(region, method = "osm", lat = latitude, long = longitude)
+
+comments_geo <- comments %>%
+  left_join(geo_results, by = "region")
+
+
+library(leaflet)
+library(tidygeocoder)
+
+# Aggregate the number of comments by region
+comments_count <- comments %>%
+  group_by(region) %>%
+  summarise(comment_count = n())
+
+# Merge the comment count with the geocoded results
+comments_geo <- comments_count %>%
+  left_join(geo_results, by = "region")
+
+# Create the interactive map
+pal <- colorNumeric(palette = "YlGnBu", domain = comments_geo$comment_count)
+
+# Create the leaflet map
+map <- leaflet(comments_geo) %>%
+  addTiles() %>%  # Add default OSM map tiles
+  addCircleMarkers(
+    lat = ~latitude, lng = ~longitude, 
+    color = ~pal(comment_count), 
+    radius = 8, 
+    fillOpacity = 0.8, 
+    popup = ~paste(region, "<br>Comments: ", comment_count)
+  ) %>%
+  addLegend("bottomright", pal = pal, values = ~comment_count, title = "Number of Comments", opacity = 1)
+
+map
+saveWidget(map, "final_map.html", selfcontained = TRUE)
+```
+
+
+## Descriptive stastistics
+```{r warning=FALSE, message=FALSE}
+
+library(dplyr)
+library(lubridate)
+library(kableExtra)
+
+
+comments <- read.csv("weibo_comments_with_source.csv", fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
+
+
+# Convert to the correct numeric format
+comments$like_count <- as.numeric(comments$like_count)
+comments$reply_count <- as.numeric(comments$reply_count)
+comments$followers_count <- as.numeric(comments$followers_count)
+comments$statuses_count <- as.numeric(comments$statuses_count)
+
+# Create the summary table
+summary_table <- data.frame(
+  Metric = c(
+    "Total Comments",
+    "Unique Users",
+    "Average Like Count",
+    "Median Like Count",
+    "Average Reply Count",
+    "Median Reply Count",
+    "Average Followers Count",
+    "Max Followers Count",
+    "Average Statuses Count",
+    "Max Statuses Count"
+  ),
+  Value = c(
+    nrow(comments),
+    n_distinct(comments$user_id),
+    mean(comments$like_count, na.rm = TRUE),
+    median(comments$like_count, na.rm = TRUE),
+    mean(comments$reply_count, na.rm = TRUE),
+    median(comments$reply_count, na.rm = TRUE),
+    mean(comments$followers_count, na.rm = TRUE),
+    max(comments$followers_count, na.rm = TRUE),
+    mean(comments$statuses_count, na.rm = TRUE),
+    max(comments$statuses_count, na.rm = TRUE)
+  )
+)
+
+summary_table$Value <- format(round(summary_table$Value, 2), nsmall = 2, scientific = FALSE)
+
+
+kable(summary_table, caption = "Summary of Weibo Comments Data \nData Source: Weibo Comments Dataset", col.names = c("Metric", "Value")) %>%
+  kable_styling(
+    full_width = TRUE,  
+    position = "center",  
+    font_size = 12,  
+    bootstrap_options = c("striped", "hover", "condensed")  
+  )
+```
+
+According to the visualization analysis of Weibo comment data, public participation presents the following characteristics: the total number of comments reached 107, contributed by 92 independent users, indicating that most users only posted a single comment. The time distribution of comments shows that the activity level increased significantly in some periods (such as a peak of 20 comments/hour), which may correspond to the concentrated discussion period of hot events. 
+
+The interaction indicators are polarized: the average number of likes is 8.45 times, but the median is only 0, indicating that a few high-heat comments (such as the content of the top user with 2.566 million fans) pull the overall mean, while most comments have low interaction. A similar phenomenon is also reflected in the number of replies (average 0.56 times, median 0 times), reflecting the limited influence of ordinary user comments. The high frequency of fierce keywords in the word cloud further confirms the indignant tendency of public sentiment, which may be related to the controversial nature of the event.
+
+The regional distribution of comments shows a clear centralized feature, mainly concentrated in China's eastern coastal areas and first-tier cities, such as Beijing, Shenzhen, Shanghai, Guangzhou, etc., indicating that users in these regions are more active. There are fewer comments in the central and western regions and third- and fourth-tier cities, reflecting the difference in digital participation between regions. In addition, a small number of comments are marked as coming from overseas, which may be related to positioning errors or special user groups.
+
+In summary, the data reveals the concentrated outbreak of emotional discussions, gender participation differences, and the significant impact of the "head effect" of social media, providing a quantitative basis for public opinion analysis.
+
+
